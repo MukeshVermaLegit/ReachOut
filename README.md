@@ -68,8 +68,10 @@ tool is built to *tell you that* rather than dress a guess up as a hit.
 ## Install
 
 ```bash
-git clone <your-repo> ReachOut && cd ReachOut
+git clone https://github.com/MukeshVermaLegit/ReachOut  && cd ReachOut
+run - ./reachout.py serve --port 9000 
 ./reachout.py doctor
+
 ```
 
 Python 3.10+. That is the entire installation.

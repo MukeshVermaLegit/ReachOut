@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReachOut</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>ReachOut</h1>
+  <span class="sub">your private contact index</span>
+  <span class="grow"></span>
+  <span class="chip" id="dbchip" title="where everything is stored"></span>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="find" class="on">Find</button>
+  <button data-tab="phone">Phone</button>
+  <button data-tab="teach">Teach</button>
+  <button data-tab="domains">Domains</button>
+  <button data-tab="data">Database</button>
+  <button data-tab="health">Health</button>
+</nav>
+
+<!-- ------------------------------------------------------------------ find -->
+<section id="panel-find" class="panel on">
+  <form id="find-form">
+    <input type="text" id="find-name" placeholder="Full name, or a LinkedIn URL" autofocus>
+    <input type="text" id="find-company" placeholder="Company name or domain">
+    <button type="submit">Find</button>
+  </form>
+  <div class="opts">
+    <label><input type="checkbox" id="opt-github" checked> GitHub</label>
+    <label><input type="checkbox" id="opt-web" checked> Company site</label>
+    <label><input type="checkbox" id="opt-search" checked> Web search</label>
+    <label><input type="checkbox" id="opt-relearn"> Re-harvest pattern</label>
+    <label><input type="checkbox" id="opt-phone"> Phone numbers</label>
+    <label title="Connects to the company's mail server. Opt-in; see docs/VERIFICATION.md">
+      <input type="checkbox" id="opt-smtp"> SMTP probe</label>
+  </div>
+  <div id="find-out"></div>
+  <footer>
+    Confidence is evidence, not proof. <b>HIGH</b> means the address was found published or
+    confirmed by a mail server; <b>MEDIUM</b> means a strong inference from a pattern learned
+    from real addresses at that company; <b>LOW</b> and below are format guesses.
+  </footer>
+</section>
+
+<!-- ----------------------------------------------------------------- phone -->
+<section id="panel-phone" class="panel">
+  <p class="lede">Phone numbers are never inferred from a name. They are reported only where
+  a public page already ties one to this person &mdash; and the work email is what makes the
+  match trustworthy rather than plausible.</p>
+  <form id="phone-form">
+    <input type="text" id="ph-name" placeholder="Full name">
+    <input type="text" id="ph-company" placeholder="Company name or domain">
+    <input type="text" id="ph-email" placeholder="Work email (optional, but the strongest anchor)">
+    <input type="text" id="ph-region" placeholder="IN" maxlength="2" class="tiny"
+           title="Two-letter country code used to read local-format numbers">
+    <button type="submit">Look up</button>
+  </form>
+  <div class="opts">
+    <label><input type="checkbox" id="ph-search" checked> Web search</label>
+    <label>pages <input type="number" id="ph-pages" value="6" min="1" max="30" class="num"></label>
+  </div>
+  <div id="phone-out"></div>
+
+  <div class="card">
+    <div class="meta">Check a number, offline</div>
+    <form id="checkphone-form" class="inline">
+      <input type="text" id="cp-number" placeholder="+91 98765 43210">
+      <input type="text" id="cp-region" placeholder="IN" maxlength="2" class="tiny">
+      <button type="submit" class="ghost">Check</button>
+    </form>
+    <div id="cp-out"></div>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------------- teach -->
+<section id="panel-teach" class="panel">
+  <p class="lede">Automated harvesting only works where a company has a public footprint.
+  What you already know is ground truth &mdash; and one real address collapses a four-way guess.</p>
+
+  <div class="card">
+    <div class="meta">Record an address you know is real</div>
+    <form id="teach-addr">
+      <input type="text" id="ta-domain" placeholder="acme.com">
+      <input type="text" id="ta-name" placeholder="Full Name">
+      <input type="text" id="ta-value" placeholder="name@acme.com &mdash; or a phone number">
+      <button type="submit">Record</button>
+    </form>
+    <div class="hint">A phone number here is stored as that person&rsquo;s number at the domain.
+      It teaches no pattern; numbers cannot be derived from a name.</div>
+    <div id="ta-out"></div>
+  </div>
+
+  <div class="card">
+    <div class="meta">State the format outright</div>
+    <form id="teach-pattern">
+      <input type="text" id="tp-domain" placeholder="acme.com">
+      <input type="text" id="tp-template" placeholder="{first}.{last}" class="mono">
+      <input type="number" id="tp-confidence" value="90" min="1" max="100" class="num"
+             title="How sure you are, as a percentage">
+      <button type="submit">Pin</button>
+    </form>
+    <div class="hint">Tokens: <code>{first} {last} {middle} {f} {l} {m}</code>.
+      A pinned pattern is never overwritten by later harvesting.
+      <span id="tp-preview" class="mono"></span></div>
+    <div id="tp-out"></div>
+  </div>
+
+  <div class="card">
+    <div class="meta">Import an address book</div>
+    <p class="hint">The highest-yield thing you can do. Export contacts from Google, Outlook or
+      your mail client and drop the CSV here &mdash; years of correspondence become naming
+      patterns for every company you have ever emailed. Consumer addresses are skipped.
+      Nothing leaves this machine.</p>
+    <form id="teach-bulk">
+      <input type="file" id="tb-file" accept=".csv,.txt">
+      <button type="submit">Import</button>
+    </form>
+    <details><summary>or paste rows</summary>
+      <textarea id="tb-text" rows="6" placeholder="name,email&#10;Alice Wong,alice.wong@acme.com"></textarea>
+    </details>
+    <div id="tb-out"></div>
+  </div>
+
+  <div class="card">
+    <div class="meta">Withdraw a stated format</div>
+    <form id="teach-forget" class="inline">
+      <input type="text" id="tf-domain" placeholder="acme.com">
+      <button type="submit" class="ghost">Unpin</button>
+    </form>
+    <div class="hint">Removes only the pattern you pinned. Harvested samples stay.</div>
+    <div id="tf-out"></div>
+  </div>
+</section>
+
+<!-- --------------------------------------------------------------- domains -->
+<section id="panel-domains" class="panel">
+  <form id="domains-filter" class="inline">
+    <input type="text" id="dm-filter" placeholder="Filter domains">
+    <button type="submit" class="ghost">Filter</button>
+  </form>
+  <div id="domains-list"></div>
+  <div id="domain-detail"></div>
+</section>
+
+<!-- -------------------------------------------------------------- database -->
+<section id="panel-data" class="panel">
+  <div class="card">
+    <div class="meta">What you have accumulated</div>
+    <div class="stats" id="stats"></div>
+    <div class="hint" id="dbpath"></div>
+  </div>
+
+  <div class="card">
+    <div class="meta">People</div>
+    <form id="people-form" class="inline">
+      <input type="text" id="pp-q" placeholder="Search names, companies or addresses">
+      <button type="submit" class="ghost">Search</button>
+    </form>
+    <div id="people-out"></div>
+  </div>
+
+  <div class="card">
+    <div class="meta">Export</div>
+    <form id="export-form" class="inline">
+      <label>minimum confidence
+        <input type="number" id="ex-min" value="55" min="0" max="100" class="num"></label>
+      <button type="button" class="ghost" data-format="csv">Download CSV</button>
+      <button type="button" class="ghost" data-format="json">Download JSON</button>
+    </form>
+  </div>
+
+  <div class="card danger">
+    <div class="meta">Forget</div>
+    <p class="hint">The erasure half of keeping data about real people. Deletion is permanent
+      and previewed first.</p>
+    <form id="forget-form" class="inline">
+      <select id="fg-kind">
+        <option value="person">person</option>
+        <option value="domain">domain</option>
+        <option value="email">email</option>
+        <option value="phone">phone</option>
+      </select>
+      <input type="text" id="fg-value" placeholder="Jane Doe">
+      <button type="submit" class="ghost">Preview</button>
+    </form>
+    <div id="forget-out"></div>
+  </div>
+</section>
+
+<!-- ---------------------------------------------------------------- health -->
+<section id="panel-health" class="panel">
+  <div class="card">
+    <div class="meta">Environment</div>
+    <button id="doctor-run" class="ghost">Run check</button>
+    <div id="doctor-out"><div class="hint">Probes each search backend and the GitHub rate
+      limit. Makes a handful of network requests.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="meta">Accuracy &mdash; leave-one-out, on your own data</div>
+    <form id="eval-form" class="inline">
+      <label>minimum samples <input type="number" id="ev-min" value="3" min="2" max="50" class="num"></label>
+      <label><input type="checkbox" id="ev-misses"> show misses</label>
+      <button type="submit" class="ghost">Measure</button>
+    </form>
+    <div id="eval-out"><div class="hint">Hides each known address in turn and asks whether the
+      pattern would have guessed it. The only number about this tool that is yours.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="meta">Phone providers</div>
+    <div id="providers-out"></div>
+  </div>
+</section>
+
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
