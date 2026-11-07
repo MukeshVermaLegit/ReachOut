@@ -141,28 +141,7 @@ ticked. This is the single highest-value thing you can do for the tool.
 ./reachout.py serve --port 9000         # everything above, in a browser
 ```
 
-## Teaching it what you already know
 
-Automated harvesting only works where a company has a public footprint. A
-two-person startup with no GitHub org and no published addresses will return
-four format guesses at VERY LOW, and it should.
-
-But you often *know* the answer already — it is your own company, your college,
-a client you email weekly. `teach` is how that knowledge gets in:
-
-```
-$ ./reachout.py find "Harshit Jain" "GreenFlow Ventures"
-  1. harshit.jain@greenflow.ventures    29 VERY LOW      ← four-way coin flip
-  ...
-  4. harshit@greenflow.ventures         16 VERY LOW
-
-$ ./reachout.py teach greenflow.ventures "Isha Rao" isha@greenflow.ventures
-  isha@greenflow.ventures recorded as a real address
-  it follows john (first name only)
-
-$ ./reachout.py find "Harshit Jain" "GreenFlow Ventures"
-  1. harshit@greenflow.ventures         79 MEDIUM       ← now first, and justified
-```
 
 One real address collapses a four-way guess. Three modes:
 
